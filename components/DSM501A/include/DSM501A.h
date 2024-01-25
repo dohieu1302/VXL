@@ -20,6 +20,5 @@ extern volatile unsigned long falling_edge_time_v1;
 
 void IRAM_ATTR change_v2_isr (void *arg);  //1 micrometro
 void IRAM_ATTR change_v1_isr (void *arg);  //2.5 micrometro
-// void dsm501a_task (void *pvParameters);
 
 #endif /* DSM501A_SETUP_H */

@@ -11,15 +11,7 @@
 #include "MQ135.h"
 #include "DSM501A.h"
 #include "driver/adc.h"
-#define ADC1_TEST_CHANNEL (4)  // GPIO35 https://esp32.vn/idf/adc.html
-
-#include "freertos/timers.h"
-TimerHandle_t sensorTimer;
-#define SENSOR_UPDATE_INTERVAL (3000 / portTICK_PERIOD_MS)
-
-void sensorTimerCallback(TimerHandle_t xTimer) {
-    printf("Sensor update\n");
-}
+#define ADC1_TEST_CHANNEL (4)  // GPIO32 
 
 void Reader_task(void *pvParameter)
 {
@@ -104,10 +96,5 @@ void app_main()
 {
 	nvs_flash_init();
     vTaskDelay(2000 / portTICK_PERIOD_MS);
-    // sensorTimer = xTimerCreate("SensorTimer", SENSOR_UPDATE_INTERVAL, pdTRUE, (void *)0, sensorTimerCallback);
-    // if (sensorTimer == NULL) {
-    //     printf("Error");
-    // }
-    // xTimerStart(sensorTimer, 0);
 	xTaskCreate(&Reader_task, "Reader_task", 2048, NULL, 5, NULL );
 }

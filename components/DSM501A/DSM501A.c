@@ -12,9 +12,7 @@ volatile unsigned int pulses_v1 = 0;
 volatile unsigned long falling_edge_time_v1 = 0;
 
 
-void IRAM_ATTR change_v2_isr (void *arg)
-// void change_v2_isr ( void *arg )
-{
+void IRAM_ATTR change_v2_isr (void *arg) {
     uint32_t gpio_status = gpio_get_level((gpio_num_t)(uint32_t) arg);
     if(gpio_status == previous_state_v2) return;
     else if (gpio_status == 0) {
@@ -26,9 +24,7 @@ void IRAM_ATTR change_v2_isr (void *arg)
     }
 }
 
-void IRAM_ATTR change_v1_isr (void *arg)
-// void change_v1_isr ( void *arg )
-{
+void IRAM_ATTR change_v1_isr (void *arg) {
     uint32_t gpio_status = gpio_get_level((gpio_num_t)(uint32_t) arg);
     if(gpio_status == previous_state_v1) return;
     else if (gpio_status == 0) {

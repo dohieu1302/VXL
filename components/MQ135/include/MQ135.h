@@ -1,12 +1,3 @@
-/***********************************************
-HOW TO USE
-1. Declare a Air_param_t variable to write and read air value.
-2. Get the ADC value from module MQ135.
-3. If you have temperature and humidity value, use function getAQI_Correctval(...)
- 	 else use function getAQI_val
-
-*********************************************/
-
 #include <stdio.h>
 #include <math.h>
 
