@@ -99,44 +99,6 @@ double MQ135_getCorrectToluene(float tem, float hum, uint32_t ADC_val) {
 	return MQ135_getCorrectPPM(44.947, -3.445, tem, hum, ADC_val);
 }
 
-/*
- float MQ135::getR0() {
- double r0 = getResistance() / 3.6;
- return r0;
- }
-
- float MQ135::getCorrectedR0(float tem, float hum) {
- double r0 = getCorrectedResistance(tem, hum) / 3.6;
- return r0;
- }
-
- double MQ135::getR0ByCO2Level(float ppm) {
- if (ppm > ATMOCO2) {
- ppm -= ATMOCO2;
- }
- else {
- return NAN;
- }
- double tmp = -(log10(ppm / 110.47) / -2.862) + log10(getResistance());
- return pow(10, tmp);
- }
-
- double MQ135::getCorrectedR0ByCO2Level(float ppm, float tem, float hum) {
- if (ppm > ATMOCO2) {
- ppm -= ATMOCO2;
- }
- else {
- return NAN;
- }
- double tmp = -(log10(ppm / 110.47) / -2.862) + log10(getCorrectedResistance(tem, hum));
- return pow(10, tmp);
- }
-
- void MQ135::setR0(float r0) {
- R0 = r0;
- }
- */
-
 void getAQI_val(Air_param_t *aqi, uint32_t ADC_val) {
 	aqi->Acetone = MQ135_getAcetone(ADC_val);
 	aqi->Alcohol = MQ135_getAlcohol(ADC_val);

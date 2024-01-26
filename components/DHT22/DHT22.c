@@ -9,70 +9,42 @@
 
 #include "DHT22.h"
 
-// == global defines =============================================
-
 static const char* TAG = "DHT";
 
-int DHTgpio = 4;				// my default DHT pin = 4
+int DHTgpio = 4;				// default DHT pin = 4
 float humidity = 0.;
 float temperature = 0.;
 
-// == set the DHT used pin=========================================
-
-void setDHTgpio( int gpio )
-{
+void setDHTgpio(int gpio) {
 	DHTgpio = gpio;
 }
 
-// == get temp & hum =============================================
+float getHumidity() {return humidity;}
+float getTemperature() {return temperature;}
 
-float getHumidity() { return humidity; }
-float getTemperature() { return temperature; }
-
-// == error handler ===============================================
-
-void errorHandler(int response)
-{
+void errorHandler(int response) {
 	switch(response) {
-	
 		case DHT_TIMEOUT_ERROR :
-			ESP_LOGE( TAG, "Sensor Timeout\n" );
+			ESP_LOGE(TAG, "Sensor Timeout\n");
 			break;
-
 		case DHT_CHECKSUM_ERROR:
-			ESP_LOGE( TAG, "CheckSum error\n" );
+			ESP_LOGE(TAG, "CheckSum error\n");
 			break;
-
 		case DHT_OK:
 			break;
-
 		default :
-			ESP_LOGE( TAG, "Unknown error\n" );
+			ESP_LOGE(TAG, "Unknown error\n");
 	}
 }
 
-/*-------------------------------------------------------------------------------
-;
-;	get next state 
-;
-;	I don't like this logic. It needs some interrupt blocking / priority
-;	to ensure it runs in realtime.
-;
-;--------------------------------------------------------------------------------*/
-
-int getSignalLevel( int usTimeOut, bool state )
-{
-
+int getSignalLevel(int usTimeOut, bool state) {  // get next state 
 	int uSec = 0;
-	while( gpio_get_level(DHTgpio)==state ) {
-
-		if( uSec > usTimeOut ) 
+	while(gpio_get_level(DHTgpio) == state) {
+		if(uSec > usTimeOut) 
 			return -1;
-		
 		++uSec;
 		esp_rom_delay_us(1);		// uSec delay
 	}
-	
 	return uSec;
 }
 
@@ -106,56 +78,55 @@ To request data from DHT:
 
 #define MAXdhtData 5	// to complete 40 = 5*8 Bits
 
-int readDHT()
-{
+int readDHT() {
 int uSec = 0;
 
 uint8_t dhtData[MAXdhtData];
 uint8_t byteInx = 0;
 uint8_t bitInx = 7;
 
-	for (int k = 0; k<MAXdhtData; k++) 
+	for (int k = 0; k < MAXdhtData; k++) 
 		dhtData[k] = 0;
 
 	// == Send start signal to DHT sensor ===========
 
-	gpio_set_direction( DHTgpio, GPIO_MODE_OUTPUT );
+	gpio_set_direction(DHTgpio, GPIO_MODE_OUTPUT);
 
 	// pull down for 3 ms for a smooth and nice wake up 
-	gpio_set_level( DHTgpio, 0 );
-	esp_rom_delay_us( 3000 );			
+	gpio_set_level(DHTgpio, 0);
+	esp_rom_delay_us(3000);			
 
 	// pull up for 25 us for a gentile asking for data
-	gpio_set_level( DHTgpio, 1 );
-	esp_rom_delay_us( 25 );
+	gpio_set_level(DHTgpio, 1);
+	esp_rom_delay_us(25);
 
-	gpio_set_direction( DHTgpio, GPIO_MODE_INPUT );		// change to input mode
+	gpio_set_direction(DHTgpio, GPIO_MODE_INPUT);		// change to input mode
   
 	// == DHT will keep the line low for 80 us and then high for 80us ====
 
-	uSec = getSignalLevel( 85, 0 );
+	uSec = getSignalLevel(85, 0);
 //	ESP_LOGI( TAG, "Response = %d", uSec );
-	if( uSec<0 ) return DHT_TIMEOUT_ERROR; 
+	if(uSec < 0) return DHT_TIMEOUT_ERROR; 
 
 	// -- 80us up ------------------------
 
-	uSec = getSignalLevel( 85, 1 );
+	uSec = getSignalLevel(85, 1);
 //	ESP_LOGI( TAG, "Response = %d", uSec );
-	if( uSec<0 ) return DHT_TIMEOUT_ERROR;
+	if (uSec < 0) return DHT_TIMEOUT_ERROR;
 
 	// == No errors, read the 40 data bits ================
   
-	for( int k = 0; k < 40; k++ ) {
+	for(int k = 0; k < 40; k++) {
 
 		// -- starts new data transmission with >50us low signal
 
-		uSec = getSignalLevel( 56, 0 );
-		if( uSec<0 ) return DHT_TIMEOUT_ERROR;
+		uSec = getSignalLevel(56, 0);
+		if(uSec < 0) return DHT_TIMEOUT_ERROR;
 
 		// -- check to see if after >70us rx data is a 0 or a 1
 
-		uSec = getSignalLevel( 75, 1 );
-		if( uSec<0 ) return DHT_TIMEOUT_ERROR;
+		uSec = getSignalLevel(75, 1);
+		if(uSec < 0) return DHT_TIMEOUT_ERROR;
 
 		// add the current read to the output data
 		// since all dhtData array where set to 0 at the start, 
